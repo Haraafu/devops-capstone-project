@@ -1,50 +1,101 @@
-apiVersion: tekton.dev/v1
+#
+# This pipeline uses the tasks defined in tasks.yaml
+#   - cleanup
+#   - accounts-clone
+#   - accounts-lint
+#   - accounts-test
+#   - accounts-build
+#   - accounts-deploy
+#
+---
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
-metadata:
+metadata:  
   name: cd-pipeline
 spec:
-  params:
-    - {name: repo-url, type: string}
-    - {name: branch, type: string, default: main}
-    - {name: image, type: string}
   workspaces:
     - name: pipeline-workspace
+  params:
+    - name: repo-url
+    - name: branch
+      default: main
+    - name: image
+      type: string
   tasks:
+    - name: init
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace          
+      taskRef:
+        name: cleanup
+      params:
+        - name: run-id
+          value: $(context.pipelineRun.uid)
+
     - name: clone
-      taskRef: {name: accounts-clone}
-      params:
-        - {name: repo-url, value: $(params.repo-url)}
-        - {name: branch, value: $(params.branch)}
-        - {name: run-id, value: $(context.pipelineRun.uid)}
       workspaces:
-        - {name: source, workspace: pipeline-workspace}
+        - name: output
+          workspace: pipeline-workspace          
+      taskRef:
+        name: accounts-clone
+      params:
+      - name: url
+        value: $(params.repo-url)
+      - name: revision
+        value: $(params.branch)
+      - name: run-id
+        value: $(context.pipelineRun.uid)
+      runAfter:
+        - init
+
     - name: lint
-      runAfter: [clone]
-      taskRef: {name: accounts-lint}
+      runAfter:
+        - clone
+      taskRef:
+        name: accounts-lint
       params:
-        - {name: run-id, value: $(context.pipelineRun.uid)}
+        - name: run-id
+          value: $(context.pipelineRun.uid)
       workspaces:
-        - {name: source, workspace: pipeline-workspace}
+        - name: source
+          workspace: pipeline-workspace
+
     - name: test
-      runAfter: [lint]
-      taskRef: {name: accounts-test}
+      runAfter:
+        - lint
+      taskRef:
+        name: accounts-test
       params:
-        - {name: run-id, value: $(context.pipelineRun.uid)}
+        - name: run-id
+          value: $(context.pipelineRun.uid)
       workspaces:
-        - {name: source, workspace: pipeline-workspace}
+        - name: source
+          workspace: pipeline-workspace
+
     - name: build
-      runAfter: [test]
-      taskRef: {name: accounts-build}
+      runAfter:
+        - test
+      taskRef:
+        name: accounts-build
       params:
-        - {name: image, value: $(params.image)}
-        - {name: run-id, value: $(context.pipelineRun.uid)}
+        - name: image
+          value: $(params.image)
+        - name: run-id
+          value: $(context.pipelineRun.uid)
       workspaces:
-        - {name: source, workspace: pipeline-workspace}
+        - name: source
+          workspace: pipeline-workspace
+
     - name: deploy
-      runAfter: [build]
-      taskRef: {name: accounts-deploy}
+      runAfter:
+        - build
+      taskRef:
+        name: accounts-deploy
       params:
-        - {name: image, value: $(params.image)}
-        - {name: run-id, value: $(context.pipelineRun.uid)}
+        - name: image
+          value: $(params.image)
+        - name: run-id
+          value: $(context.pipelineRun.uid)
       workspaces:
-        - {name: source, workspace: pipeline-workspace}
+        - name: source
+          workspace: pipeline-workspace

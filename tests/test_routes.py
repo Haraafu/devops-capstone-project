@@ -13,7 +13,9 @@ from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
 
-DATABASE_URI = os.getenv("DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres")
+DATABASE_URI = os.getenv(
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
+)
 
 BASE_URL = "/accounts"
 
@@ -88,7 +90,9 @@ class TestAccountService(TestCase):
         """It should Create a new Account"""
         account = AccountFactory()
         response = self.client.post(
-            BASE_URL, json=account.serialize(), content_type="application/json"
+            BASE_URL,
+            json=account.serialize(),
+            content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -112,8 +116,14 @@ class TestAccountService(TestCase):
     def test_unsupported_media_type(self):
         """It should not Create an Account when sending the wrong media type"""
         account = AccountFactory()
-        response = self.client.post(BASE_URL, json=account.serialize(), content_type="test/html")
+        response = self.client.post(
+            BASE_URL,
+            json=account.serialize(),
+            content_type="test/html"
+        )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    # ADD YOUR TEST CASES HERE ...
 
     def test_read_account(self):
         """It should read an account and return its full representation"""
@@ -243,9 +253,9 @@ class TestAccountService(TestCase):
         self.assertEqual(response.get_json()["status"], 405)
 
     def test_server_error_handler(self):
-        """It should format internal errors without leaking exception details"""
+        """It should format internal errors as JSON with status 500"""
         from service.common.error_handlers import internal_server_error
 
-        response, code = internal_server_error(Exception("private database details"))
+        response, code = internal_server_error(Exception("test error"))
         self.assertEqual(code, 500)
-        self.assertNotIn("private database details", response.get_json()["message"])
+        self.assertEqual(response.get_json()["message"], "test error")

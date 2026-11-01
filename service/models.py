@@ -92,7 +92,7 @@ class Account(db.Model, PersistentBase):
     email = db.Column(db.String(64))
     address = db.Column(db.String(256))
     phone_number = db.Column(db.String(32), nullable=True)  # phone number is optional
-    date_joined = db.Column(db.Date(), nullable=False, default=date.today)
+    date_joined = db.Column(db.Date(), nullable=False, default=date.today())
 
     def __repr__(self):
         return f"<Account {self.name} id=[{self.id}]>"
@@ -105,7 +105,7 @@ class Account(db.Model, PersistentBase):
             "email": self.email,
             "address": self.address,
             "phone_number": self.phone_number,
-            "date_joined": self.date_joined.isoformat(),
+            "date_joined": self.date_joined.isoformat()
         }
 
     def deserialize(self, data):
@@ -127,8 +127,8 @@ class Account(db.Model, PersistentBase):
         if phone is not None and (not isinstance(phone, str) or len(phone) > 32 or "\x00" in phone):
             raise DataValidationError("Invalid Account: invalid phone_number")
         try:
-            joined = data.get("date_joined")
-            joined = date.fromisoformat(joined) if joined is not None else date.today()
+            date_joined = data.get("date_joined")
+            date_joined = date.fromisoformat(date_joined) if date_joined is not None else date.today()
         except (ValueError, TypeError) as error:
             raise DataValidationError("Invalid Account: date_joined must be YYYY-MM-DD") from error
         # Validate everything before assigning so invalid PUT requests are atomic.
@@ -136,7 +136,7 @@ class Account(db.Model, PersistentBase):
         self.email = data["email"]
         self.address = data["address"]
         self.phone_number = phone
-        self.date_joined = joined
+        self.date_joined = date_joined
         return self
 
     @classmethod
