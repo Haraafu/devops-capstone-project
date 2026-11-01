@@ -5,52 +5,73 @@ metadata:
 spec:
   replicas: 1
   selector:
-    matchLabels: {app: accounts}
+    matchLabels:
+      app: accounts
   template:
     metadata:
-      labels: {app: accounts}
+      labels:
+        app: accounts
     spec:
       imagePullSecrets:
         - name: ibm-registry
       securityContext:
         runAsNonRoot: true
-        seccompProfile: {type: RuntimeDefault}
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: accounts
           image: IMAGE_PLACEHOLDER
           imagePullPolicy: Always
-          ports: [{containerPort: 8080}]
+          ports:
+            - containerPort: 8080
           env:
             - name: DATABASE_URI
               valueFrom:
-                secretKeyRef: {name: accounts-db, key: uri}
+                secretKeyRef:
+                  name: accounts-db
+                  key: uri
             - name: CORS_ORIGINS
               valueFrom:
-                configMapKeyRef: {name: accounts-config, key: cors-origins}
+                configMapKeyRef:
+                  name: accounts-config
+                  key: cors-origins
           securityContext:
             allowPrivilegeEscalation: false
-            capabilities: {drop: [ALL]}
+            capabilities:
+              drop:
+                - ALL
           startupProbe:
-            httpGet: {path: /health, port: 8080}
+            httpGet:
+              path: /health
+              port: 8080
             failureThreshold: 30
             periodSeconds: 5
           readinessProbe:
-            httpGet: {path: /health, port: 8080}
+            httpGet:
+              path: /health
+              port: 8080
             periodSeconds: 5
           livenessProbe:
-            httpGet: {path: /health, port: 8080}
+            httpGet:
+              path: /health
+              port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10
           resources:
-            requests: {cpu: 50m, memory: 64Mi}
-            limits: {cpu: 500m, memory: 256Mi}
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: accounts
 spec:
-  selector: {app: accounts}
+  selector:
+    app: accounts
   ports:
     - name: http
       port: 8080

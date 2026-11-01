@@ -3,8 +3,11 @@ kind: Route
 metadata:
   name: accounts
 spec:
-  to: {kind: Service, name: accounts}
-  port: {targetPort: http}
+  to:
+    kind: Service
+    name: accounts
+  port:
+    targetPort: http
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect

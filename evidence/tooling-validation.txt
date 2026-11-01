@@ -1,8 +1,0 @@
-Repository: https://github.com/Haraafu/devops-capstone-project
-Project: https://github.com/users/Haraafu/projects/1
-In GitHub Projects select Board layout, group by Status, show Labels, Sprint and Story Points.
-Save the view. Capture Planning-userstories-done.png with all seven New issues visible.
-PASS: partial board initialization resumes its saved project without recreating or resetting resources
-PASS: all five Tekton stages share a run-specific source path; builds use a TaskRun-specific BuildConfig
-PASS: all shell entry points and embedded Tekton scripts parse
-NOT EXECUTED: OpenShift admission, rollout, registry push, or Tekton runtime; assigned lab required

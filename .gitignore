@@ -110,8 +110,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
-
-# Local project IDs and evidence bundles
-.board-state.json
-.github-publish/
-submission/

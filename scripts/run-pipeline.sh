@@ -10,7 +10,7 @@ oc apply --dry-run=server -f tekton/tasks.yaml -f tekton/pipeline.yaml >/dev/nul
 RUN=$(tkn pipeline start cd-pipeline \
   --serviceaccount accounts-pipeline \
   -p "repo-url=$REPO_URL" -p branch=main -p "image=$IMAGE" \
-  -w name=pipeline-workspace,claimName=pipeline-pvc --output name)
+  -w name=pipeline-workspace,claimName=pipelinerun-pvc --output name)
 mkdir -p evidence
 printf '%s\n' "$RUN" > evidence/pipelinerun-name.txt
 tkn pipelinerun logs "$RUN" --all --follow 2>&1 | tee evidence/pipelinerun.txt

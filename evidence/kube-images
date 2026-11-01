@@ -1,3 +1,0 @@
-$ docker images --digests --no-trunc accounts:latest
-REPOSITORY   TAG       DIGEST    IMAGE ID                                                                  CREATED        SIZE
-accounts     latest    <none>    sha256:909028826ffa4b4640cd8c38f334dc475176927a3a3f8b207d9fdb11850ebba2   1 second ago   202MB
