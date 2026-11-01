@@ -1,0 +1,57 @@
+{
+  "url": "https://github.com/users/Haraafu/projects/1/views/1?x=1793556881318",
+  "capturedAt": "2026-11-01T18:14:43.200Z",
+  "viewport": {
+    "width": 2800,
+    "height": 1400
+  },
+  "sha256": "b7645a76baafad0248a98756c90ea63d071fac18ca6a051b7c9f2882a4bac42e",
+  "apiVerified": true,
+  "expected": [
+    {
+      "title": "Containerize your microservice using Docker",
+      "labels": [
+        "technical debt"
+      ],
+      "status": "Sprint backlog",
+      "sprint": "Sprint 3",
+      "points": 5
+    },
+    {
+      "title": "Deploy your Docker image to Kubernetes",
+      "labels": [
+        "enhancement"
+      ],
+      "status": "Sprint backlog",
+      "sprint": "Sprint 3",
+      "points": 5
+    },
+    {
+      "title": "Create a CD pipeline to automate deployment to Kubernetes",
+      "labels": [
+        "technical debt"
+      ],
+      "status": "Sprint backlog",
+      "sprint": "Sprint 3",
+      "points": 8
+    }
+  ],
+  "rendered": [
+    {
+      "status": "Sprint backlog",
+      "title": "Containerize your microservice using Docker",
+      "text": "devops-capstone-project #7\nContainerize your microservice using Docker\ntechnical debt\n5\nSprint 3\nClick a value to filter the view"
+    },
+    {
+      "status": "Sprint backlog",
+      "title": "Deploy your Docker image to Kubernetes",
+      "text": "devops-capstone-project #8\nDeploy your Docker image to Kubernetes\nenhancement\n5\nSprint 3\nClick a value to filter the view"
+    },
+    {
+      "status": "Sprint backlog",
+      "title": "Create a CD pipeline to automate deployment to Kubernetes",
+      "text": "devops-capstone-project #12\nCreate a CD pipeline to automate deployment to Kubernetes\ntechnical debt\n8\nSprint 3\nClick a value to filter the view"
+    }
+  ],
+  "method": "Playwright screenshot of the live public GitHub Project; no DOM or image edits"
+}

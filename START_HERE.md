@@ -1,27 +1,13 @@
 # Start here
 
-The Customer Accounts service is implemented and locally tested. This package includes all code, ten sprint-ready stories, GitHub planning automation, Docker/OpenShift/Tekton configuration, and capture scripts for the complete 33-item rubric.
+The Customer Accounts capstone is published at https://github.com/Haraafu/devops-capstone-project. The real board is at https://github.com/users/Haraafu/projects/1.
 
-**The submission is not complete yet.** Local tests pass, but the real GitHub board, public URLs, hosted CI run, Docker build, OpenShift deployment, and Tekton logs require your authenticated GitHub and Skills Network environments. See `docs/AI_GRADED_CHECKLIST.md` for the exact item-by-item status.
+**Current audit: 28/33 artifacts present; five assigned-lab items are still missing.** Read [docs/CURRENT_STATUS.md](docs/CURRENT_STATUS.md) for verified results and [docs/RESUME_LAB.md](docs/RESUME_LAB.md) for the remaining deployment and Tekton steps.
 
-## Fast path
+The service passed 38 PostgreSQL tests with 96% coverage, clean Flake8 and Pylint 10/10. GitHub Actions built the actual Dockerfile, checked UID 1001, started Gunicorn on port 8080, and captured five real CRUD responses backed by PostgreSQL. See `evidence/ci-provenance.json` for the exact successful run and source commit.
 
-1. Extract this ZIP and open a terminal in `devops-capstone-project`.
-2. In your GitHub-capable environment, install/sign in to `gh` and grant Project access: `gh auth login` then `gh auth refresh -s project`. Never paste a token into chat or commit credentials.
-3. Run `python3 scripts/board.py init --start YYYY-MM-DD`, using the date you start Sprint 1. This creates your public repository from the IBM template, the board, three weekly iterations, and seven initial stories. It intentionally stops at the first screenshot state.
-4. Follow `docs/RUNBOOK.md` in order to capture the planning screenshots, publish the implementation through a pull request, run CI, and deploy in the Skills Network lab.
-5. Put screenshots in `evidence/` with the required names. Run `python3 scripts/validate-submission.py` before submitting. The initial audit correctly reports 6/33 artifacts present and 27 still missing.
+Planning and completion screenshots are real browser captures of the live GitHub Project. Sprint 1 and Sprint 2 are closed after capture; Sprint 3 has Docker Done and Kubernetes/CD in Sprint backlog. Preserve `.board-state.json`; do not recreate the board or replay the initial stages.
 
-The initial local outputs use SQLite. The prepared GitHub CI workflow uses PostgreSQL (`postgres:alpine`) and enforces 95% coverage. Refresh the local outputs from the lab before final submission.
+Remaining items are 26, 28, 31, 32 and 33. They require the assigned Skills Network OpenShift/Tekton environment. No cluster evidence has been substituted with local or GitHub-runner output.
 
-## Included implementation
-
-- REST create/read/update/delete/list operations with input validation and JSON errors.
-- Flask-Talisman security headers and an explicit Flask-CORS policy.
-- 37 tests; 96% local coverage; clean Flake8; Pylint 10/10.
-- CI on pull requests to main and pushes to main, with a README build badge.
-- Non-root Python 3.9 Docker image with Gunicorn on port 8080.
-- PostgreSQL and accounts Kubernetes manifests plus HTTPS OpenShift Route.
-- Tekton clone/lint/test/build/deploy pipeline using an OpenShift Docker BuildConfig.
-
-`requirements.lock.txt` records all installed package versions from local validation. `requirements.txt` remains the course-facing direct dependency list.
+Run `python scripts/validate-submission.py` to refresh both audit formats. It deliberately exits with status 1 while evidence is missing. After future changes to main, run `python scripts/capture-ci.py` after the new workflow succeeds.

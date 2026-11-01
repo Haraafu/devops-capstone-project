@@ -1,0 +1,14 @@
+{
+  "repository": "Haraafu/devops-capstone-project",
+  "run": {
+    "conclusion": "success",
+    "databaseId": 41335295847,
+    "headSha": "27de1adbe48ea8da0184992066771142932dd87f",
+    "status": "completed",
+    "url": "https://github.com/Haraafu/devops-capstone-project/actions/runs/41335295847"
+  },
+  "main_commit": "27de1adbe48ea8da0184992066771142932dd87f",
+  "database": "PostgreSQL in GitHub Actions",
+  "container": "Actual Dockerfile built and exercised on the GitHub runner",
+  "cluster_deployment": false
+}

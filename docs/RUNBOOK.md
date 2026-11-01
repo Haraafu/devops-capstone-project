@@ -2,6 +2,8 @@
 
 This runbook creates real evidence in chronological order. All commands run from the repository root. Use Python 3.9 and a disposable test database. Command blocks use bash (the Skills Network lab or WSL works on Windows).
 
+**Existing Haraafu project:** GitHub publication, planning captures, PostgreSQL CI and Docker verification have been executed. Read `CURRENT_STATUS.md` and `RESUME_LAB.md`; continue with the assigned-lab work in sections 6–9. Preserve `.board-state.json` and do not replay completed planning stages or create another repository/project.
+
 ## 1. GitHub repository and initial planning
 
 Install GitHub CLI (`gh`) and authenticate on your own machine or lab terminal. Enable project access:
@@ -14,7 +16,7 @@ python3 scripts/board.py init --start YYYY-MM-DD
 
 Replace YYYY-MM-DD with your actual Sprint 1 start date. The script creates a **public**, template-based `devops-capstone-project` in your personal account; it refuses to overwrite an existing repository. It creates a GitHub Project with eight Status values (the seven required columns plus Closed), an iteration field with three one-week sprints, a Story Points field, three milestones, and seven original issues.
 
-The GitHub API automation is prepared but has not been live-tested against your account. If a command reports an API/scope error, fix the stated permission/schema problem before continuing. `.board-state.json` stores the exact created identifiers; preserve it. If init stops partway, do not delete the repository or keep repeating create commands: resume/fix the partially created board using its saved IDs.
+The GitHub API automation was executed against Haraafu's real project on 2 November 2026. If a command reports an API/scope error, fix it before continuing. `.board-state.json` stores the exact created identifiers; preserve it. An incomplete initialization can resume from saved IDs; a completed initialization refuses to recreate resources. Projects access requires the `project` OAuth scope.
 
 Open the printed project URL. Change the layout to **Board**, group by **Status**, and show **Labels**, **Story Points**, and **Sprint**. Save the view. Make the column width/zoom sufficient to show all seven initial story titles in New issues. Capture the actual browser board as `evidence/Planning-userstories-done.png`.
 
@@ -43,7 +45,7 @@ Open the PR, wait for all checks, and address any PostgreSQL/CI failures. Review
 python3 scripts/capture-ci.py
 ```
 
-This captures the **latest successful run matching current main**, saves complete logs as `ci-workflow-done`, downloads the actual PostgreSQL test output as `security-headers-done`, and records/verifies all six public file URLs in `submission-urls.txt`/`.json`.
+This captures the **latest successful run matching current main**, saves complete logs as `ci-workflow-done`, downloads the actual PostgreSQL tests, Docker build/runtime/image evidence and five REST transcripts, and verifies all six public file URLs in `submission-urls.txt`/`.json`. `ci-provenance.json` records the run and commit. Docker artifacts from this runner do not establish an IBM registry push or cluster deployment.
 
 For ongoing lab development, use separate sprint branches and normal PR review, for example `git checkout -b sprint2/security` followed by commit/push/PR. Do not skip failing tests to merge.
 
@@ -177,6 +179,8 @@ bash scripts/run-pipeline.sh
 ```
 
 Use a **fresh image tag per pipeline run**; the deploy task also restarts the workload to ensure it pulls the newly built image. The script applies resources, performs server-side manifest validation, starts the pipeline under its scoped service account, saves all task logs as `pipelinerun.txt`, waits for success, and appends the run details. The stages run in order: clone → lint → test (isolated PostgreSQL sidecar) → build/push → deploy. A failing stage stops downstream work.
+
+Each run uses a source directory keyed by its PipelineRun UID and a BuildConfig keyed by the build TaskRun UID, keeping validated source and build configuration isolated. Delivery updates the shared accounts Deployment, so execute this lab's deliveries sequentially. Keep the run-specific resources until evidence is saved, then follow the lab cleanup instructions.
 
 Confirm the rollout and the live API after CD, then mark `cd` Done and capture `cd-pipeline-done.png`. Refresh `kube-deploy-accounts` after this rollout if desired. If the pipeline fails, preserve the error, fix it, re-run and capture the complete successful run; do not edit logs to hide failures.
 

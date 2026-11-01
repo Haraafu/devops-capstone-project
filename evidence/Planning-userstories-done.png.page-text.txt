@@ -1,0 +1,69 @@
+Skip to content
+Navigation Menu
+Products
+Developers
+Businesses
+Resources
+Pricing
+Search
+/
+Sign in
+Sign up
+Customer Accounts Capstone
+Insights
+Capstone board
+Filter
+View
+New issues
+7
+ (7)
+New issues
+devops-capstone-project #2
+Setting up the development environment
+Click a value to filter the view
+devops-capstone-project #3
+Read an account from the service
+Click a value to filter the view
+devops-capstone-project #4
+Update an account in the service
+Click a value to filter the view
+devops-capstone-project #5
+Delete an account from the service
+Click a value to filter the view
+devops-capstone-project #6
+List all accounts in the service
+Click a value to filter the view
+devops-capstone-project #7
+Containerize your microservice using Docker
+Click a value to filter the view
+devops-capstone-project #8
+Deploy your Docker image to Kubernetes
+Click a value to filter the view
+Icebox
+0
+ (0)
+Icebox
+Product backlog
+0
+ (0)
+Product backlog
+Sprint backlog
+0
+ (0)
+Sprint backlog
+In progress
+0
+ (0)
+In progress
+Review/QA
+0
+ (0)
+Review/QA
+Done
+0
+ (0)
+Done
+Closed
+0
+ (0)
+Closed
