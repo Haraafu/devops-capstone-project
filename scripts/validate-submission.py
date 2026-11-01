@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Inventory 33 artifacts. Presence is not a grading or provenance guarantee."""
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 import re
 import sys
@@ -64,21 +65,29 @@ def main():
     urls_path = EVIDENCE / "submission-urls.json"
     urls = json.loads(urls_path.read_text()) if urls_path.exists() else {}
     missing = []
+    lines = []
     for item in items:
         ready, detail = check_item(item, urls)
         item["file_check"] = "PRESENT_REVIEW" if ready else "MISSING_OR_INVALID"
         if not ready:
             missing.append(item["number"])
-        print(f"{item['number']:02} {item['file_check']:18} {item['artifact']} {detail}")
+        line = f"{item['number']:02} {item['file_check']:18} {item['artifact']} {detail}"
+        lines.append(line)
+        print(line)
     report = {
         "artifact_count": 33,
         "present": 33 - len(missing),
         "missing": missing,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "points_represented_by_present_artifacts": sum(item["points"] for item in items if item["number"] not in missing),
+        "points_total": sum(item["points"] for item in items),
         "warning": "Presence does not establish provenance, external execution, or screenshot content.",
         "items": items,
     }
     (EVIDENCE / "submission-audit.json").write_text(json.dumps(report, indent=2) + "\n")
-    print(f"\nPresent: {33-len(missing)}/33. Missing or invalid: {len(missing)}.")
+    summary = f"Present: {33-len(missing)}/33. Missing or invalid: {len(missing)}."
+    print("\n" + summary)
+    (EVIDENCE / "submission-audit.txt").write_text("\n".join(lines) + "\n\n" + summary + "\n")
     return 1 if missing else 0
 
 

@@ -4,7 +4,7 @@
 
 Customer Accounts microservice for the IBM DevOps and Software Engineering Capstone. A Flask REST API manages customer names, email addresses, postal addresses, phone numbers, and joining dates in PostgreSQL. The project includes TDD tests, security headers, CORS policy, GitHub Actions CI, Docker packaging, OpenShift deployment, and a Tekton CD pipeline.
 
-**Start with [START_HERE.md](START_HERE.md).** The full [33-item submission checklist](docs/AI_GRADED_CHECKLIST.md) distinguishes implemented source from evidence still requiring GitHub or a running cluster. The badge becomes meaningful after publishing to your account and passing CI; it is not a claim of a completed remote build.
+**Start with [START_HERE.md](START_HERE.md).** The full [33-item submission checklist](docs/AI_GRADED_CHECKLIST.md) distinguishes implemented source from evidence still requiring GitHub or a running cluster. The repository is public and real CI has passed; see the current status and provenance for the exact run. OpenShift/Tekton lab execution is still pending.
 
 ## Run locally
 
@@ -73,7 +73,7 @@ HTTPS redirect enforcement is handled by the OpenShift edge Route. Talisman uses
 
 `Dockerfile` uses `python:3.9-slim`, installs requirements, runs as an unprivileged user, and starts Gunicorn on port 8080. `deploy/` provisions the accounts service, persistent PostgreSQL, and an HTTPS OpenShift route. The PostgreSQL cluster image supports OpenShift's arbitrary UID policy.
 
-`tekton/` defines clone → lint → test → build → deploy. Tests use a separate PostgreSQL sidecar. The build task invokes an OpenShift Docker BuildConfig, which pushes the image to IBM Cloud Container Registry; it does not require a Docker daemon inside a Tekton step. Deployment reuses the manual deployment manifests and waits for rollout success. See [the runbook](docs/RUNBOOK.md) for prerequisites and capture commands.
+`tekton/` defines clone â†’ lint â†’ test â†’ build â†’ deploy. Tests use a separate PostgreSQL sidecar. The build task invokes an OpenShift Docker BuildConfig, which pushes the image to IBM Cloud Container Registry; it does not require a Docker daemon inside a Tekton step. Deployment reuses the manual deployment manifests and waits for rollout success. See [the runbook](docs/RUNBOOK.md) for prerequisites and capture commands.
 
 ## Planning and submission
 

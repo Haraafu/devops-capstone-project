@@ -5,7 +5,7 @@
     "kind": "url",
     "artifact": "README.md",
     "points": 2,
-    "status": "needs_github"
+    "status": "verified_public_main"
   },
   {
     "number": 2,
@@ -13,7 +13,7 @@
     "kind": "url",
     "artifact": "user-story.md",
     "points": 1,
-    "status": "needs_github"
+    "status": "verified_public_main"
   },
   {
     "number": 3,
@@ -21,7 +21,7 @@
     "kind": "screenshot",
     "artifact": "Planning-userstories-done",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 4,
@@ -29,7 +29,7 @@
     "kind": "screenshot",
     "artifact": "planning-productbacklog-done",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 5,
@@ -37,7 +37,7 @@
     "kind": "screenshot",
     "artifact": "planning-labels-done",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 6,
@@ -45,7 +45,7 @@
     "kind": "screenshot",
     "artifact": "planning-kanban-done",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 7,
@@ -53,7 +53,7 @@
     "kind": "url",
     "artifact": "setup.cfg",
     "points": 1,
-    "status": "needs_github"
+    "status": "verified_public_main"
   },
   {
     "number": 8,
@@ -61,7 +61,7 @@
     "kind": "screenshot",
     "artifact": "rest-techdebt-done",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 9,
@@ -69,7 +69,7 @@
     "kind": "screenshot",
     "artifact": "read-accounts",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 10,
@@ -77,7 +77,7 @@
     "kind": "screenshot",
     "artifact": "list-accounts",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 11,
@@ -85,7 +85,7 @@
     "kind": "screenshot",
     "artifact": "update-accounts",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 12,
@@ -93,7 +93,7 @@
     "kind": "screenshot",
     "artifact": "delete-accounts",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 13,
@@ -101,7 +101,7 @@
     "kind": "output",
     "artifact": "rest-create-done",
     "points": 2,
-    "status": "captured_local_sqlite"
+    "status": "captured_ci_postgresql_container"
   },
   {
     "number": 14,
@@ -109,7 +109,7 @@
     "kind": "output",
     "artifact": "rest-list-done",
     "points": 2,
-    "status": "captured_local_sqlite"
+    "status": "captured_ci_postgresql_container"
   },
   {
     "number": 15,
@@ -117,7 +117,7 @@
     "kind": "output",
     "artifact": "rest-read-done",
     "points": 2,
-    "status": "captured_local_sqlite"
+    "status": "captured_ci_postgresql_container"
   },
   {
     "number": 16,
@@ -125,7 +125,7 @@
     "kind": "output",
     "artifact": "rest-update-done",
     "points": 2,
-    "status": "captured_local_sqlite"
+    "status": "captured_ci_postgresql_container"
   },
   {
     "number": 17,
@@ -133,7 +133,7 @@
     "kind": "output",
     "artifact": "rest-delete-done",
     "points": 2,
-    "status": "captured_local_sqlite"
+    "status": "captured_ci_postgresql_container"
   },
   {
     "number": 18,
@@ -141,7 +141,7 @@
     "kind": "screenshot",
     "artifact": "sprint2-plan",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 19,
@@ -149,7 +149,7 @@
     "kind": "output",
     "artifact": "ci-workflow-done",
     "points": 2,
-    "status": "needs_github_run"
+    "status": "captured_github_actions"
   },
   {
     "number": 20,
@@ -157,7 +157,7 @@
     "kind": "screenshot",
     "artifact": "ci-kanban-done",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 21,
@@ -165,7 +165,7 @@
     "kind": "url",
     "artifact": "ci-build.yaml",
     "points": 4,
-    "status": "needs_github"
+    "status": "verified_public_main"
   },
   {
     "number": 22,
@@ -173,7 +173,7 @@
     "kind": "url",
     "artifact": "__init__.py",
     "points": 1,
-    "status": "needs_github"
+    "status": "verified_public_main"
   },
   {
     "number": 23,
@@ -181,7 +181,7 @@
     "kind": "output",
     "artifact": "security-headers-done",
     "points": 1,
-    "status": "captured_local_sqlite"
+    "status": "captured_ci_postgresql"
   },
   {
     "number": 24,
@@ -189,7 +189,7 @@
     "kind": "screenshot",
     "artifact": "security-kanban-done",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 25,
@@ -197,7 +197,7 @@
     "kind": "screenshot",
     "artifact": "sprint3-plan",
     "points": 1,
-    "status": "needs_github"
+    "status": "captured_live_github"
   },
   {
     "number": 26,
@@ -205,7 +205,7 @@
     "kind": "output",
     "artifact": "kube-app-output",
     "points": 1,
-    "status": "needs_openshift_run"
+    "status": "needs_assigned_lab"
   },
   {
     "number": 27,
@@ -213,7 +213,7 @@
     "kind": "screenshot",
     "artifact": "kube-docker-done",
     "points": 1,
-    "status": "needs_github_and_docker"
+    "status": "captured_live_github"
   },
   {
     "number": 28,
@@ -221,7 +221,7 @@
     "kind": "screenshot",
     "artifact": "kube-kubernetes-done",
     "points": 1,
-    "status": "needs_github_and_openshift"
+    "status": "needs_assigned_lab"
   },
   {
     "number": 29,
@@ -229,7 +229,7 @@
     "kind": "url",
     "artifact": "Dockerfile",
     "points": 2,
-    "status": "needs_github"
+    "status": "verified_public_main"
   },
   {
     "number": 30,
@@ -237,7 +237,7 @@
     "kind": "output",
     "artifact": "kube-images",
     "points": 2,
-    "status": "needs_docker_run"
+    "status": "captured_ci_docker"
   },
   {
     "number": 31,
@@ -245,7 +245,7 @@
     "kind": "output",
     "artifact": "kube-deploy-accounts",
     "points": 2,
-    "status": "needs_openshift_run"
+    "status": "needs_assigned_lab"
   },
   {
     "number": 32,
@@ -253,7 +253,7 @@
     "kind": "output",
     "artifact": "pipelinerun.txt",
     "points": 5,
-    "status": "needs_tekton_run"
+    "status": "needs_assigned_lab"
   },
   {
     "number": 33,
@@ -261,6 +261,6 @@
     "kind": "screenshot",
     "artifact": "cd-pipeline-done",
     "points": 1,
-    "status": "needs_github_and_tekton"
+    "status": "needs_assigned_lab"
   }
 ]

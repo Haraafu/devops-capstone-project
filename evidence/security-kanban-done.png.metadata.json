@@ -1,0 +1,43 @@
+{
+  "url": "https://github.com/users/Haraafu/projects/1/views/1?x=1793556840088",
+  "capturedAt": "2026-11-01T18:14:01.934Z",
+  "viewport": {
+    "width": 2800,
+    "height": 1400
+  },
+  "sha256": "fdbcaf57135cfe5986e0eafef1a39941ea906d3d1d6b4778eb2717f8ae30438f",
+  "apiVerified": true,
+  "expected": [
+    {
+      "title": "Need the ability to automate continuous integration checks",
+      "labels": [
+        "technical debt"
+      ],
+      "status": "Closed",
+      "sprint": "Sprint 2",
+      "points": 5
+    },
+    {
+      "title": "Need to add security headers and CORS policies",
+      "labels": [
+        "enhancement"
+      ],
+      "status": "Done",
+      "sprint": "Sprint 2",
+      "points": 5
+    }
+  ],
+  "rendered": [
+    {
+      "status": "Done",
+      "title": "Need to add security headers and CORS policies",
+      "text": "devops-capstone-project #11\nNeed to add security headers and CORS policies\nenhancement\n5\nSprint 2\nClick a value to filter the view"
+    },
+    {
+      "status": "Closed",
+      "title": "Need the ability to automate continuous integration checks",
+      "text": "devops-capstone-project #10\nNeed the ability to automate continuous integration checks\ntechnical debt\n5\nSprint 2\nClick a value to filter the view"
+    }
+  ],
+  "method": "Playwright screenshot of the live public GitHub Project; no DOM or image edits"
+}

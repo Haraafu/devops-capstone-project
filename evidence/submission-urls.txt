@@ -1,0 +1,6 @@
+README.md: https://github.com/Haraafu/devops-capstone-project/blob/main/README.md
+user-story.md: https://github.com/Haraafu/devops-capstone-project/blob/main/.github/ISSUE_TEMPLATE/user-story.md
+setup.cfg: https://github.com/Haraafu/devops-capstone-project/blob/main/setup.cfg
+ci-build.yaml: https://github.com/Haraafu/devops-capstone-project/blob/main/.github/workflows/ci-build.yaml
+__init__.py: https://github.com/Haraafu/devops-capstone-project/blob/main/service/__init__.py
+Dockerfile: https://github.com/Haraafu/devops-capstone-project/blob/main/Dockerfile

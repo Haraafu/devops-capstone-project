@@ -1,4 +1,4 @@
-/workspace/scratch/87ee4cd307ab/.venv/lib/python3.9/site-packages/nose/plugins/manager.py:418: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+/opt/hostedtoolcache/Python/3.9.25/x64/lib/python3.9/site-packages/nose/plugins/manager.py:418: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
   import pkg_resources
 It should call the db-create command ... ok
 It should Create an account and add it to the database ... ok
@@ -23,6 +23,7 @@ It should reject malformed dates, empty/oversized fields and non-object JSON ...
 It should list every persisted account ... ok
 It should return an empty list when no accounts exist ... ok
 It should return JSON for an unsupported method ... ok
+It should reject PostgreSQL-invalid NULs for POST and preserve valid data on PUT. ... ok
 It should allow omitted phone and date fields ... ok
 It should read an account and return its full representation ... ok
 It should return a JSON 404 for a missing account ... ok
@@ -52,6 +53,6 @@ service/routes.py                     50      0   100%
 ----------------------------------------------------------------
 TOTAL                                256     11    96%
 ----------------------------------------------------------------------
-Ran 37 tests in 0.563s
+Ran 38 tests in 0.731s
 
 OK

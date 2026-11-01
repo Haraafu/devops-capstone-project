@@ -1,0 +1,64 @@
+Skip to content
+Navigation Menu
+Products
+Developers
+Businesses
+Resources
+Pricing
+Search
+/
+Sign in
+Sign up
+Customer Accounts Capstone
+Insights
+Capstone board
+Filter
+sprint:"Sprint 2"
+2
+ (2)
+matching items
+View
+New issues
+0
+ (0)
+New issues
+Icebox
+0
+ (0)
+Icebox
+Product backlog
+0
+ (0)
+Product backlog
+Sprint backlog
+1
+ (1)
+Sprint backlog
+devops-capstone-project #11
+Need to add security headers and CORS policies
+enhancement
+5
+Sprint 2
+Click a value to filter the view
+In progress
+0
+ (0)
+In progress
+Review/QA
+0
+ (0)
+Review/QA
+Done
+1
+ (1)
+Done
+devops-capstone-project #10
+Need the ability to automate continuous integration checks
+technical debt
+5
+Sprint 2
+Click a value to filter the view
+Closed
+0
+ (0)
+Closed
