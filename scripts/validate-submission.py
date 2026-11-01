@@ -61,7 +61,7 @@ def check_item(item, urls):
 
 
 def main():
-    items = json.loads((ROOT / "docs/checklist.json").read_text())
+    items = json.loads((ROOT / "scripts/checklist.json").read_text())
     urls_path = EVIDENCE / "submission-urls.json"
     urls = json.loads(urls_path.read_text()) if urls_path.exists() else {}
     missing = []

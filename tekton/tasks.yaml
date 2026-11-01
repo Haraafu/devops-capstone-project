@@ -51,7 +51,7 @@ spec:
         fi
 
 ---
-apiVersion: tekton.dev/v1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: accounts-clone
@@ -95,7 +95,7 @@ spec:
         '
 
 ---
-apiVersion: tekton.dev/v1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: accounts-lint
@@ -127,7 +127,7 @@ spec:
         '
 
 ---
-apiVersion: tekton.dev/v1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: accounts-test
@@ -167,7 +167,7 @@ spec:
       script: "#!/bin/sh\nset -eu\npython -m venv /tmp/test-venv\n/tmp/test-venv/bin/pip install --no-cache-dir -r requirements.txt\n/tmp/test-venv/bin/python - <<'PY'\nimport os, time, psycopg2\nfor attempt in range(60):\n    try:\n        psycopg2.connect(os.environ['DATABASE_URI']).close()\n        break\n    except psycopg2.OperationalError:\n        if attempt == 59:\n            raise\n        time.sleep(1)\nPY\n/tmp/test-venv/bin/nosetests\n/tmp/test-venv/bin/coverage report --fail-under=95\n"
 
 ---
-apiVersion: tekton.dev/v1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: accounts-build
@@ -191,7 +191,7 @@ spec:
       script: "#!/bin/bash\nset -euo pipefail\n[[ \"$IMAGE\" =~ ^[a-zA-Z0-9._:/@-]+$ ]] || exit 1\nsed -e \"s|IMAGE_PLACEHOLDER|$IMAGE|g\" \\\n  -e \"s|name: accounts$|name: $BUILD_CONFIG|\" deploy/buildconfig.yaml | oc apply -f -\n# OpenShift's build service builds the Dockerfile and pushes to IBM ICR.\noc start-build \"$BUILD_CONFIG\" --from-dir=. --follow --wait\n"
 
 ---
-apiVersion: tekton.dev/v1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: accounts-deploy
