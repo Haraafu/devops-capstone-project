@@ -1,0 +1,40 @@
+Local validation — 30 October 2026
+Runtime: Python 3.9.25; database: SQLite (explicit local smoke-test configuration).
+
+$ ../.venv/bin/flake8 . --count --statistics
+0
+
+$ bash -n scripts/test.sh scripts/deploy.sh scripts/run-pipeline.sh scripts/capture-cluster.sh
+Exit code 0
+
+YAML syntax parsed: deploy/postgresql.yaml (3 document(s))
+YAML syntax parsed: deploy/configmap.yaml (1 document(s))
+YAML syntax parsed: deploy/deployment.yaml (2 document(s))
+YAML syntax parsed: deploy/route.yaml (1 document(s))
+YAML syntax parsed: deploy/buildconfig.yaml (1 document(s))
+YAML syntax parsed: tekton/pvc.yaml (1 document(s))
+YAML syntax parsed: tekton/pipeline.yaml (1 document(s))
+YAML syntax parsed: tekton/tasks.yaml (5 document(s))
+YAML syntax parsed: tekton/rbac.yaml (3 document(s))
+YAML syntax parsed: .github/workflows/ci-build.yaml (1 document(s))
+YAML syntax parsed: compose.yaml (1 document(s))
+
+All 33 checklist entries mapped; ten complete stories; sprint totals 17/10/18.
+
+Actual nosetests summary:
+TOTAL                                256     11    96%
+Ran 37 tests in 0.563s
+OK
+
+Actual Pylint result:
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+All five curl transcripts contain actual HTTP responses.
+rest-create-done: HTTP 201
+rest-list-done: HTTP 200
+rest-read-done: HTTP 200
+rest-update-done: HTTP 200
+rest-delete-done: HTTP 204
+
+Not executed: authenticated GitHub mutations/CI, Docker build, OpenShift rollout, Tekton pipeline.
+YAML syntax checks are not cluster-side schema/admission checks.
