@@ -1,0 +1,137 @@
+name: CI Build
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    name: Lint, test, and coverage
+    # Python 3.9 binaries are available on this fixed course-compatible runner.
+    runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgres:alpine
+        env:
+          POSTGRES_USER: postgres
+          # Disposable credentials derived per run; no stored cloud credential.
+          POSTGRES_PASSWORD: ${{ github.run_id }}-${{ github.run_attempt }}
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URI: postgresql://postgres:${{ github.run_id }}-${{ github.run_attempt }}@localhost:5432/testdb
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Lint with Flake8
+        run: flake8 service tests --count --show-source --statistics
+      - name: Check code quality with Pylint
+        run: pylint service --fail-under=8
+      - name: Run nosetests with at least 95 percent coverage
+        run: |
+          set -o pipefail
+          mkdir -p evidence
+          nosetests 2>&1 | tee evidence/security-headers-done
+          coverage report --fail-under=95
+          coverage xml
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-evidence
+          path: |
+            evidence/security-headers-done
+            coverage.xml
+  container:
+    name: Build and verify Docker image with PostgreSQL
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Build the actual course Dockerfile
+        run: |
+          set -o pipefail
+          mkdir -p evidence
+          docker build --tag accounts:latest . 2>&1 | tee evidence/docker-build.txt
+          {
+            echo '$ docker images --digests --no-trunc accounts:latest'
+            docker images --digests --no-trunc accounts:latest
+          } > evidence/kube-images
+          docker image inspect accounts:latest > evidence/docker-image-inspect.json
+          test "$(docker image inspect accounts:latest --format '{{.Config.User}}')" = 1001
+      - name: Start disposable PostgreSQL and container on port 8080
+        env:
+          TEST_DB_PASSWORD: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          docker network create capstone-test
+          docker run -d --name capstone-postgres --network capstone-test \
+            -e POSTGRES_USER=accounts -e POSTGRES_PASSWORD="$TEST_DB_PASSWORD" \
+            -e POSTGRES_DB=accounts postgres:alpine
+          for attempt in $(seq 1 60); do
+            if docker exec capstone-postgres pg_isready -U accounts -d accounts; then break; fi
+            sleep 2
+          done
+          docker exec capstone-postgres pg_isready -U accounts -d accounts
+          docker run -d --name capstone-accounts --network capstone-test \
+            -p 127.0.0.1:8080:8080 \
+            -e DATABASE_URI="postgresql://accounts:$TEST_DB_PASSWORD@capstone-postgres:5432/accounts" \
+            accounts:latest
+          for attempt in $(seq 1 60); do
+            if curl --silent --fail http://localhost:8080/health; then break; fi
+            sleep 2
+          done
+          curl --silent --show-error --fail http://localhost:8080/health
+      - name: Capture actual curl evidence and runtime provenance
+        run: |
+          python3 scripts/capture-rest.py --base-url http://localhost:8080
+          {
+            echo "GitHub run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "Source commit: $GITHUB_SHA"
+            echo '$ docker exec capstone-accounts id'
+            docker exec capstone-accounts id
+            echo '$ docker exec capstone-postgres psql -U accounts -d accounts -c SELECT version()'
+            docker exec capstone-postgres psql -U accounts -d accounts -c 'SELECT version();'
+            echo '$ curl --include http://localhost:8080/health'
+            curl --silent --show-error --fail --include http://localhost:8080/health
+          } > evidence/docker-validation.txt
+      - name: Preserve container diagnostics
+        if: always()
+        run: |
+          docker logs capstone-accounts > evidence/docker-app.log 2>&1 || true
+          docker logs capstone-postgres > evidence/docker-postgres.log 2>&1 || true
+      - name: Upload actual container evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-evidence
+          path: |
+            evidence/docker-build.txt
+            evidence/docker-image-inspect.json
+            evidence/docker-validation.txt
+            evidence/docker-app.log
+            evidence/docker-postgres.log
+            evidence/kube-images
+            evidence/rest-*-done
+      - name: Remove disposable runtime
+        if: always()
+        run: |
+          docker rm -f capstone-accounts capstone-postgres || true
+          docker network rm capstone-test || true

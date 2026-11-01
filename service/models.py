@@ -92,7 +92,7 @@ class Account(db.Model, PersistentBase):
     email = db.Column(db.String(64))
     address = db.Column(db.String(256))
     phone_number = db.Column(db.String(32), nullable=True)  # phone number is optional
-    date_joined = db.Column(db.Date(), nullable=False, default=date.today())
+    date_joined = db.Column(db.Date(), nullable=False, default=date.today)
 
     def __repr__(self):
         return f"<Account {self.name} id=[{self.id}]>"
@@ -105,7 +105,7 @@ class Account(db.Model, PersistentBase):
             "email": self.email,
             "address": self.address,
             "phone_number": self.phone_number,
-            "date_joined": self.date_joined.isoformat()
+            "date_joined": self.date_joined.isoformat(),
         }
 
     def deserialize(self, data):
@@ -115,23 +115,28 @@ class Account(db.Model, PersistentBase):
         Args:
             data (dict): A dictionary containing the resource data
         """
+        if not isinstance(data, dict):
+            raise DataValidationError("Invalid Account: expected a JSON object")
+        for field, maximum in (("name", 64), ("email", 64), ("address", 256)):
+            if field not in data:
+                raise DataValidationError("Invalid Account: missing " + field)
+            value = data[field]
+            if not isinstance(value, str) or not value.strip() or len(value) > maximum:
+                raise DataValidationError(f"Invalid Account: invalid {field}")
+        phone = data.get("phone_number")
+        if phone is not None and (not isinstance(phone, str) or len(phone) > 32):
+            raise DataValidationError("Invalid Account: invalid phone_number")
         try:
-            self.name = data["name"]
-            self.email = data["email"]
-            self.address = data["address"]
-            self.phone_number = data.get("phone_number")
-            date_joined = data.get("date_joined")
-            if date_joined:
-                self.date_joined = date.fromisoformat(date_joined)
-            else:
-                self.date_joined = date.today()
-        except KeyError as error:
-            raise DataValidationError("Invalid Account: missing " + error.args[0]) from error
-        except TypeError as error:
-            raise DataValidationError(
-                "Invalid Account: body of request contained "
-                "bad or no data - " + error.args[0]
-            ) from error
+            joined = data.get("date_joined")
+            joined = date.fromisoformat(joined) if joined is not None else date.today()
+        except (ValueError, TypeError) as error:
+            raise DataValidationError("Invalid Account: date_joined must be YYYY-MM-DD") from error
+        # Validate everything before assigning so invalid PUT requests are atomic.
+        self.name = data["name"]
+        self.email = data["email"]
+        self.address = data["address"]
+        self.phone_number = phone
+        self.date_joined = joined
         return self
 
     @classmethod

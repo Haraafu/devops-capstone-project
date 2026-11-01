@@ -22,9 +22,7 @@ def bad_request(error):
     message = str(error)
     app.logger.warning(message)
     return (
-        jsonify(
-            status=status.HTTP_400_BAD_REQUEST, error="Bad Request", message=message
-        ),
+        jsonify(status=status.HTTP_400_BAD_REQUEST, error="Bad Request", message=message),
         status.HTTP_400_BAD_REQUEST,
     )
 
@@ -73,8 +71,8 @@ def mediatype_not_supported(error):
 @app.errorhandler(status.HTTP_500_INTERNAL_SERVER_ERROR)
 def internal_server_error(error):
     """Handles unexpected server error with 500_SERVER_ERROR"""
-    message = str(error)
-    app.logger.error(message)
+    app.logger.error("Internal service error: %s", error)
+    message = "An internal error occurred"
     return (
         jsonify(
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,

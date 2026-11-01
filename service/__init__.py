@@ -6,12 +6,34 @@ and SQL database
 """
 import sys
 from flask import Flask
+from flask_talisman import Talisman
+from flask_cors import CORS
 from service import config
 from service.common import log_handlers
 
 # Create Flask application
 app = Flask(__name__)
 app.config.from_object(config)
+
+# OpenShift terminates TLS at the edge; plain HTTP remains usable for lab curls.
+Talisman(
+    app,
+    force_https=False,
+    content_security_policy={"default-src": "'self'", "object-src": "'none'"},
+    referrer_policy="strict-origin-when-cross-origin",
+)
+CORS(
+    app,
+    resources={
+        r"/accounts(?:/.*)?": {
+            "origins": app.config["CORS_ORIGINS"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type"],
+            "expose_headers": ["Location"],
+            "supports_credentials": False,
+        }
+    },
+)
 
 # Import the routes After the Flask app is created
 # pylint: disable=wrong-import-position, cyclic-import, wrong-import-order

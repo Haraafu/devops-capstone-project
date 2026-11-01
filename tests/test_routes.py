@@ -13,9 +13,7 @@ from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
 
-DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
-)
+DATABASE_URI = os.getenv("DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres")
 
 BASE_URL = "/accounts"
 
@@ -90,9 +88,7 @@ class TestAccountService(TestCase):
         """It should Create a new Account"""
         account = AccountFactory()
         response = self.client.post(
-            BASE_URL,
-            json=account.serialize(),
-            content_type="application/json"
+            BASE_URL, json=account.serialize(), content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -116,11 +112,124 @@ class TestAccountService(TestCase):
     def test_unsupported_media_type(self):
         """It should not Create an Account when sending the wrong media type"""
         account = AccountFactory()
-        response = self.client.post(
-            BASE_URL,
-            json=account.serialize(),
-            content_type="test/html"
-        )
+        response = self.client.post(BASE_URL, json=account.serialize(), content_type="test/html")
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    # ADD YOUR TEST CASES HERE ...
+    def test_read_account(self):
+        """It should read an account and return its full representation"""
+        account = self._create_accounts(1)[0]
+        response = self.client.get(f"{BASE_URL}/{account.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), account.serialize())
+
+    def test_read_missing_account(self):
+        """It should return a JSON 404 for a missing account"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.get_json()["error"], "Not Found")
+
+    def test_list_accounts(self):
+        """It should list every persisted account"""
+        accounts = self._create_accounts(3)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual({a["id"] for a in response.get_json()}, {a.id for a in accounts})
+
+    def test_list_empty(self):
+        """It should return an empty list when no accounts exist"""
+        self.assertEqual(self.client.get(BASE_URL).get_json(), [])
+
+    def test_update_account(self):
+        """It should persist a full update without changing the id"""
+        account = self._create_accounts(1)[0]
+        data = account.serialize()
+        data["name"] = "Updated Customer"
+        data["id"] = 999999
+        response = self.client.put(f"{BASE_URL}/{account.id}", json=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()["id"], account.id)
+        actual = self.client.get(f"{BASE_URL}/{account.id}").get_json()
+        self.assertEqual(actual["name"], "Updated Customer")
+
+    def test_update_missing(self):
+        """It should not create an account through PUT"""
+        response = self.client.put(f"{BASE_URL}/0", json=AccountFactory().serialize())
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_invalid(self):
+        """It should reject invalid updates without corrupting stored data"""
+        account = self._create_accounts(1)[0]
+        response = self.client.put(f"{BASE_URL}/{account.id}", json={"name": "Oops"})
+        self.assertEqual(response.status_code, 400)
+        db.session.expire_all()
+        self.assertEqual(Account.find(account.id).name, account.name)
+
+    def test_update_wrong_content_type(self):
+        """It should require JSON for updates"""
+        account = self._create_accounts(1)[0]
+        response = self.client.put(f"{BASE_URL}/{account.id}", data="text")
+        self.assertEqual(response.status_code, 415)
+
+    def test_delete_account(self):
+        """It should delete an account and return an empty 204"""
+        account = self._create_accounts(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{account.id}")
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.data, b"")
+        self.assertEqual(self.client.get(f"{BASE_URL}/{account.id}").status_code, 404)
+
+    def test_delete_missing(self):
+        """It should make repeated deletions idempotent"""
+        self.assertEqual(self.client.delete(f"{BASE_URL}/0").status_code, 204)
+
+    def test_create_location(self):
+        """It should return a Location that resolves to the new resource"""
+        response = self.client.post(BASE_URL, json=AccountFactory().serialize())
+        location = response.headers["Location"]
+        self.assertTrue(location.endswith(f'/accounts/{response.get_json()["id"]}'))
+        self.assertEqual(self.client.get(location).status_code, 200)
+
+    def test_invalid_input(self):
+        """It should reject malformed dates, empty/oversized fields and non-object JSON"""
+        original = AccountFactory().serialize()
+        invalid = [None, [], "text", 3]
+        for field, value in [
+            ("date_joined", "not-a-date"),
+            ("date_joined", 12),
+            ("name", ""),
+            ("name", "x" * 65),
+            ("email", None),
+            ("address", 5),
+            ("phone_number", 7),
+        ]:
+            data = dict(original)
+            data[field] = value
+            invalid.append(data)
+        for data in invalid:
+            response = self.client.post(
+                BASE_URL, data=__import__("json").dumps(data), content_type="application/json"
+            )
+            self.assertEqual(response.status_code, 400, repr(data))
+        self.assertEqual(Account.all(), [])
+
+    def test_optional_fields(self):
+        """It should allow omitted phone and date fields"""
+        response = self.client.post(
+            BASE_URL, json={"name": "Ada", "email": "a@b.test", "address": "Jakarta"}
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertIsNone(response.get_json()["phone_number"])
+
+    def test_method_not_allowed(self):
+        """It should return JSON for an unsupported method"""
+        response = self.client.patch(BASE_URL)
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.get_json()["status"], 405)
+
+    def test_server_error_handler(self):
+        """It should format internal errors without leaking exception details"""
+        from service.common.error_handlers import internal_server_error
+
+        response, code = internal_server_error(Exception("private database details"))
+        self.assertEqual(code, 500)
+        self.assertNotIn("private database details", response.get_json()["message"])

@@ -1,0 +1,266 @@
+[
+  {
+    "number": 1,
+    "requirement": "README.md public GitHub URL with passing badge",
+    "kind": "url",
+    "artifact": "README.md",
+    "points": 2,
+    "status": "needs_github"
+  },
+  {
+    "number": 2,
+    "requirement": "User story template public GitHub URL",
+    "kind": "url",
+    "artifact": "user-story.md",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 3,
+    "requirement": "Seven original stories in New issues",
+    "kind": "screenshot",
+    "artifact": "Planning-userstories-done",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 4,
+    "requirement": "Triage showing Docker/Kubernetes in Icebox",
+    "kind": "screenshot",
+    "artifact": "planning-productbacklog-done",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 5,
+    "requirement": "Technical debt and enhancement labels visible",
+    "kind": "screenshot",
+    "artifact": "planning-labels-done",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 6,
+    "requirement": "Five Sprint 1 stories in Sprint backlog",
+    "kind": "screenshot",
+    "artifact": "planning-kanban-done",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 7,
+    "requirement": "setup.cfg public GitHub URL",
+    "kind": "url",
+    "artifact": "setup.cfg",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 8,
+    "requirement": "Development environment story in Done",
+    "kind": "screenshot",
+    "artifact": "rest-techdebt-done",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 9,
+    "requirement": "Read story in Done",
+    "kind": "screenshot",
+    "artifact": "read-accounts",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 10,
+    "requirement": "List story in Done",
+    "kind": "screenshot",
+    "artifact": "list-accounts",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 11,
+    "requirement": "Update story in Done",
+    "kind": "screenshot",
+    "artifact": "update-accounts",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 12,
+    "requirement": "Delete story in Done",
+    "kind": "screenshot",
+    "artifact": "delete-accounts",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 13,
+    "requirement": "CREATE curl command and response",
+    "kind": "output",
+    "artifact": "rest-create-done",
+    "points": 2,
+    "status": "captured_local_sqlite"
+  },
+  {
+    "number": 14,
+    "requirement": "LIST curl command and response",
+    "kind": "output",
+    "artifact": "rest-list-done",
+    "points": 2,
+    "status": "captured_local_sqlite"
+  },
+  {
+    "number": 15,
+    "requirement": "READ curl command and response",
+    "kind": "output",
+    "artifact": "rest-read-done",
+    "points": 2,
+    "status": "captured_local_sqlite"
+  },
+  {
+    "number": 16,
+    "requirement": "UPDATE curl command and response",
+    "kind": "output",
+    "artifact": "rest-update-done",
+    "points": 2,
+    "status": "captured_local_sqlite"
+  },
+  {
+    "number": 17,
+    "requirement": "DELETE curl command and response",
+    "kind": "output",
+    "artifact": "rest-delete-done",
+    "points": 2,
+    "status": "captured_local_sqlite"
+  },
+  {
+    "number": 18,
+    "requirement": "Two Sprint 2 stories in Sprint backlog",
+    "kind": "screenshot",
+    "artifact": "sprint2-plan",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 19,
+    "requirement": "Successful GitHub Actions complete workflow logs",
+    "kind": "output",
+    "artifact": "ci-workflow-done",
+    "points": 2,
+    "status": "needs_github_run"
+  },
+  {
+    "number": 20,
+    "requirement": "CI automation story in Done",
+    "kind": "screenshot",
+    "artifact": "ci-kanban-done",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 21,
+    "requirement": "ci-build.yaml public GitHub URL",
+    "kind": "url",
+    "artifact": "ci-build.yaml",
+    "points": 4,
+    "status": "needs_github"
+  },
+  {
+    "number": 22,
+    "requirement": "Talisman configuration public GitHub URL",
+    "kind": "url",
+    "artifact": "__init__.py",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 23,
+    "requirement": "Complete passing nosetests security output",
+    "kind": "output",
+    "artifact": "security-headers-done",
+    "points": 1,
+    "status": "captured_local_sqlite"
+  },
+  {
+    "number": 24,
+    "requirement": "Security story in Done",
+    "kind": "screenshot",
+    "artifact": "security-kanban-done",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 25,
+    "requirement": "Three Sprint 3 stories assigned and ranked",
+    "kind": "screenshot",
+    "artifact": "sprint3-plan",
+    "points": 1,
+    "status": "needs_github"
+  },
+  {
+    "number": 26,
+    "requirement": "Deployed application JSON from port 8080",
+    "kind": "output",
+    "artifact": "kube-app-output",
+    "points": 1,
+    "status": "needs_openshift_run"
+  },
+  {
+    "number": 27,
+    "requirement": "Docker story in Done",
+    "kind": "screenshot",
+    "artifact": "kube-docker-done",
+    "points": 1,
+    "status": "needs_github_and_docker"
+  },
+  {
+    "number": 28,
+    "requirement": "Kubernetes story in Done",
+    "kind": "screenshot",
+    "artifact": "kube-kubernetes-done",
+    "points": 1,
+    "status": "needs_github_and_openshift"
+  },
+  {
+    "number": 29,
+    "requirement": "Dockerfile public GitHub URL",
+    "kind": "url",
+    "artifact": "Dockerfile",
+    "points": 2,
+    "status": "needs_github"
+  },
+  {
+    "number": 30,
+    "requirement": "Docker image table with name/tag/id/time/size",
+    "kind": "output",
+    "artifact": "kube-images",
+    "points": 2,
+    "status": "needs_docker_run"
+  },
+  {
+    "number": 31,
+    "requirement": "Deployment/pod/replicaset/service details",
+    "kind": "output",
+    "artifact": "kube-deploy-accounts",
+    "points": 2,
+    "status": "needs_openshift_run"
+  },
+  {
+    "number": 32,
+    "requirement": "Complete successful Tekton pipeline logs",
+    "kind": "output",
+    "artifact": "pipelinerun.txt",
+    "points": 5,
+    "status": "needs_tekton_run"
+  },
+  {
+    "number": 33,
+    "requirement": "CD pipeline story in Done",
+    "kind": "screenshot",
+    "artifact": "cd-pipeline-done",
+    "points": 1,
+    "status": "needs_github_and_tekton"
+  }
+]
