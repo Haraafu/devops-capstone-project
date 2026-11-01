@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 import subprocess
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 state = json.loads((ROOT / ".board-state.json").read_text())
@@ -51,25 +52,29 @@ with (out / "ci-workflow-done").open("w") as stream:
         check=True,
     )
 # This replaces the local test output with the real PostgreSQL CI test output.
-subprocess.run(
-    [
-        "gh",
-        "run",
-        "download",
-        str(run["databaseId"]),
-        "--repo",
-        repo,
-        "--name",
-        "test-evidence",
-        "--dir",
-        str(out / "ci-tests"),
-    ],
-    check=True,
-)
-files = list((out / "ci-tests").rglob("security-headers-done"))
-if len(files) != 1:
-    raise SystemExit("Expected exactly one test-output artifact")
-(out / "security-headers-done").write_bytes(files[0].read_bytes())
+with tempfile.TemporaryDirectory(prefix="capstone-ci-") as folder:
+    downloaded = Path(folder)
+    for artifact in ["test-evidence", "docker-evidence"]:
+        subprocess.run(
+            ["gh", "run", "download", str(run["databaseId"]), "--repo", repo,
+             "--name", artifact, "--dir", str(downloaded / artifact)],
+            check=True,
+        )
+    expected = [
+        "security-headers-done", "kube-images", "docker-build.txt",
+        "docker-image-inspect.json", "docker-validation.txt",
+        "docker-app.log", "docker-postgres.log",
+        "rest-create-done", "rest-list-done", "rest-read-done",
+        "rest-update-done", "rest-delete-done",
+    ]
+    for name in expected:
+        files = list(downloaded.rglob(name))
+        if len(files) != 1:
+            raise SystemExit(f"Expected exactly one captured artifact: {name}")
+        (out / name).write_bytes(files[0].read_bytes())
+    coverage_files = list(downloaded.rglob("coverage.xml"))
+    if len(coverage_files) == 1:
+        (out / "ci-coverage.xml").write_bytes(coverage_files[0].read_bytes())
 paths = {
     "README.md": "README.md",
     "user-story.md": ".github/ISSUE_TEMPLATE/user-story.md",
@@ -92,4 +97,10 @@ for path in paths.values():
 (out / "submission-urls.txt").write_text(
     "\n".join(f"{name}: {url}" for name, url in urls.items()) + "\n"
 )
-print("Captured successful CI logs, PostgreSQL test output, and six public file URLs.")
+(out / "ci-provenance.json").write_text(json.dumps({
+    "repository": repo, "run": run, "main_commit": head,
+    "database": "PostgreSQL in GitHub Actions",
+    "container": "Actual Dockerfile built and exercised on the GitHub runner",
+    "cluster_deployment": False,
+}, indent=2) + "\n")
+print("Captured successful CI logs, PostgreSQL tests, Docker/REST evidence, and six public file URLs.")
