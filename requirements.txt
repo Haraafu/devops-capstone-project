@@ -9,7 +9,7 @@ psycopg2-binary==2.9.3
 python-dotenv==0.20.0
 
 # Runtime dependencies
-gunicorn==20.1.0
+gunicorn==23.0.0
 honcho==1.1.0
 
 # Code quality
@@ -27,3 +27,8 @@ coverage==6.3.2
 
 # Utilities
 httpie==3.2.1
+
+# Security and legacy nosetests compatibility
+Flask-Talisman==1.1.0
+Flask-Cors==6.0.1
+setuptools==80.10.2

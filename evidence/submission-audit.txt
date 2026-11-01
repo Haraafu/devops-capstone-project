@@ -1,0 +1,35 @@
+01 MISSING_OR_INVALID README.md public URL not captured
+02 MISSING_OR_INVALID user-story.md public URL not captured
+03 MISSING_OR_INVALID Planning-userstories-done 
+04 MISSING_OR_INVALID planning-productbacklog-done 
+05 MISSING_OR_INVALID planning-labels-done 
+06 MISSING_OR_INVALID planning-kanban-done 
+07 MISSING_OR_INVALID setup.cfg public URL not captured
+08 MISSING_OR_INVALID rest-techdebt-done 
+09 MISSING_OR_INVALID read-accounts 
+10 MISSING_OR_INVALID list-accounts 
+11 MISSING_OR_INVALID update-accounts 
+12 MISSING_OR_INVALID delete-accounts 
+13 PRESENT_REVIEW     rest-create-done evidence/rest-create-done
+14 PRESENT_REVIEW     rest-list-done evidence/rest-list-done
+15 PRESENT_REVIEW     rest-read-done evidence/rest-read-done
+16 PRESENT_REVIEW     rest-update-done evidence/rest-update-done
+17 PRESENT_REVIEW     rest-delete-done evidence/rest-delete-done
+18 MISSING_OR_INVALID sprint2-plan 
+19 MISSING_OR_INVALID ci-workflow-done 
+20 MISSING_OR_INVALID ci-kanban-done 
+21 MISSING_OR_INVALID ci-build.yaml public URL not captured
+22 MISSING_OR_INVALID __init__.py public URL not captured
+23 PRESENT_REVIEW     security-headers-done evidence/security-headers-done
+24 MISSING_OR_INVALID security-kanban-done 
+25 MISSING_OR_INVALID sprint3-plan 
+26 MISSING_OR_INVALID kube-app-output 
+27 MISSING_OR_INVALID kube-docker-done 
+28 MISSING_OR_INVALID kube-kubernetes-done 
+29 MISSING_OR_INVALID Dockerfile public URL not captured
+30 MISSING_OR_INVALID kube-images 
+31 MISSING_OR_INVALID kube-deploy-accounts 
+32 MISSING_OR_INVALID pipelinerun.txt 
+33 MISSING_OR_INVALID cd-pipeline-done 
+
+Present: 6/33. Missing or invalid: 27.

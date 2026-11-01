@@ -1,38 +1,43 @@
-#
-# This pipeline needs the following tasks from Tekton Catalog
-#   - git-clone
-#   - flake8
-#
----
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
-metadata:  
+metadata:
   name: cd-pipeline
 spec:
+  params:
+    - {name: repo-url, type: string}
+    - {name: branch, type: string, default: main}
+    - {name: image, type: string}
   workspaces:
     - name: pipeline-workspace
-  params:
-    - name: repo-url
-    - name: branch
-      default: main
   tasks:
-    - name: init
-      workspaces:
-        - name: source
-          workspace: pipeline-workspace          
-      taskRef:
-        name: cleanup
-
     - name: clone
-      workspaces:
-        - name: output
-          workspace: pipeline-workspace          
-      taskRef:
-        name: git-clone
+      taskRef: {name: accounts-clone}
       params:
-      - name: url
-        value: $(params.repo-url)
-      - name: revision
-        value: $(params.branch)
-      runAfter:
-        - init
+        - {name: repo-url, value: $(params.repo-url)}
+        - {name: branch, value: $(params.branch)}
+      workspaces:
+        - {name: source, workspace: pipeline-workspace}
+    - name: lint
+      runAfter: [clone]
+      taskRef: {name: accounts-lint}
+      workspaces:
+        - {name: source, workspace: pipeline-workspace}
+    - name: test
+      runAfter: [lint]
+      taskRef: {name: accounts-test}
+      workspaces:
+        - {name: source, workspace: pipeline-workspace}
+    - name: build
+      runAfter: [test]
+      taskRef: {name: accounts-build}
+      params:
+        - {name: image, value: $(params.image)}
+      workspaces:
+        - {name: source, workspace: pipeline-workspace}
+    - name: deploy
+      runAfter: [build]
+      taskRef: {name: accounts-deploy}
+      params:
+        - {name: image, value: $(params.image)}
+      workspaces:
+        - {name: source, workspace: pipeline-workspace}

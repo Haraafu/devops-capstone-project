@@ -1,52 +1,138 @@
----
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: echo
+  name: accounts-clone
 spec:
-  description: This task will echo the message.
   params:
-    - name: message
-      description: The message to echo
-      type: string
-  steps:
-    - name: echo-message
-      image: alpine:3
-      command: [/bin/echo]
-      args: ["$(params.message)"]
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  name: cleanup
-spec:
-  description: This task will clean up a workspace by deleting all of the files.
+    - {name: repo-url, type: string}
+    - {name: branch, type: string, default: main}
   workspaces:
     - name: source
   steps:
-    - name: remove
-      image: alpine:3
+    - name: clone
+      image: alpine/git:2.47.2
       env:
-        - name: WORKSPACE_SOURCE_PATH
-          value: $(workspaces.source.path)
-      workingDir: $(workspaces.source.path)
-      securityContext:
-        runAsNonRoot: false
-        runAsUser: 0
+        - {name: REPO_URL, value: $(params.repo-url)}
+        - {name: BRANCH, value: $(params.branch)}
+        - {name: SOURCE, value: $(workspaces.source.path)}
       script: |
-        #!/usr/bin/env sh
+        #!/bin/sh
         set -eu
-        echo "Removing all files from ${WORKSPACE_SOURCE_PATH} ..."
-        # Delete any existing contents of the directory if it exists.
-        #
-        # We don't just "rm -rf ${WORKSPACE_SOURCE_PATH}" because ${WORKSPACE_SOURCE_PATH} might be "/"
-        # or the root of a mounted volume.
-        if [ -d "${WORKSPACE_SOURCE_PATH}" ] ; then
-          # Delete non-hidden files and directories
-          rm -rf "${WORKSPACE_SOURCE_PATH:?}"/*
-          # Delete files and directories starting with . but excluding ..
-          rm -rf "${WORKSPACE_SOURCE_PATH}"/.[!.]*
-          # Delete files and directories starting with .. plus any other character
-          rm -rf "${WORKSPACE_SOURCE_PATH}"/..?*
-        fi
-
+        # Only clear the dedicated repository subdirectory in this workspace.
+        rm -rf "${SOURCE:?}/repo"
+        git clone --depth 1 --branch "$BRANCH" -- "$REPO_URL" "$SOURCE/repo"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: accounts-lint
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: lint
+      image: python:3.9-slim
+      workingDir: $(workspaces.source.path)/repo
+      env:
+        - {name: HOME, value: /tmp}
+      script: |
+        #!/bin/sh
+        set -eu
+        python -m venv /tmp/check-venv
+        /tmp/check-venv/bin/pip install --no-cache-dir -r requirements.txt
+        /tmp/check-venv/bin/flake8 service tests --count --statistics
+        /tmp/check-venv/bin/pylint service --fail-under=8
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: accounts-test
+spec:
+  workspaces:
+    - name: source
+  sidecars:
+    - name: postgres
+      image: quay.io/sclorg/postgresql-15-c9s:latest
+      env:
+        - {name: POSTGRESQL_USER, value: accounts}
+        - {name: POSTGRESQL_PASSWORD, value: disposable-test-password}
+        - {name: POSTGRESQL_DATABASE, value: testdb}
+      readinessProbe:
+        exec:
+          command: [sh, -c, 'pg_isready -U accounts -d testdb']
+        initialDelaySeconds: 5
+        periodSeconds: 3
+  steps:
+    - name: tests
+      image: python:3.9-slim
+      workingDir: $(workspaces.source.path)/repo
+      env:
+        - {name: HOME, value: /tmp}
+        - name: DATABASE_URI
+          value: postgresql://accounts:disposable-test-password@localhost:5432/testdb
+      script: |
+        #!/bin/sh
+        set -eu
+        python -m venv /tmp/test-venv
+        /tmp/test-venv/bin/pip install --no-cache-dir -r requirements.txt
+        /tmp/test-venv/bin/python - <<'PY'
+        import os, time, psycopg2
+        for attempt in range(60):
+            try:
+                psycopg2.connect(os.environ['DATABASE_URI']).close()
+                break
+            except psycopg2.OperationalError:
+                if attempt == 59:
+                    raise
+                time.sleep(1)
+        PY
+        /tmp/test-venv/bin/nosetests
+        /tmp/test-venv/bin/coverage report --fail-under=95
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: accounts-build
+spec:
+  params:
+    - {name: image, type: string}
+  workspaces:
+    - name: source
+  steps:
+    - name: build-and-push
+      image: quay.io/openshift/origin-cli:4.18
+      workingDir: $(workspaces.source.path)/repo
+      env:
+        - {name: IMAGE, value: $(params.image)}
+      script: |
+        #!/bin/bash
+        set -euo pipefail
+        [[ "$IMAGE" =~ ^[a-zA-Z0-9._:/@-]+$ ]] || exit 1
+        sed "s|IMAGE_PLACEHOLDER|$IMAGE|g" deploy/buildconfig.yaml | oc apply -f -
+        # OpenShift's build service builds the Dockerfile and pushes to IBM ICR.
+        oc start-build accounts --from-dir=. --follow --wait
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: accounts-deploy
+spec:
+  params:
+    - {name: image, type: string}
+  workspaces:
+    - name: source
+  steps:
+    - name: deploy
+      image: quay.io/openshift/origin-cli:4.18
+      workingDir: $(workspaces.source.path)/repo
+      env:
+        - {name: IMAGE, value: $(params.image)}
+      script: |
+        #!/bin/bash
+        set -euo pipefail
+        [[ "$IMAGE" =~ ^[a-zA-Z0-9._:/@-]+$ ]] || exit 1
+        oc apply -f deploy/configmap.yaml
+        sed "s|IMAGE_PLACEHOLDER|$IMAGE|g" deploy/deployment.yaml | oc apply -f -
+        oc rollout restart deployment/accounts
+        oc rollout status deployment/accounts --timeout=300s
+        oc get deployments,pods,replicasets,services -o wide
