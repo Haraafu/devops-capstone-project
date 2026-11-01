@@ -16,7 +16,11 @@ repo = state["repo"]
 if not re.fullmatch(r"[A-Za-z0-9_.-]+/devops-capstone-project", repo):
     raise SystemExit("Unexpected repository identity in state file")
 readme = ROOT / "README.md"
-readme.write_text(readme.read_text().replace("YOUR_GITHUB_USERNAME", repo.split("/")[0]))
+readme.write_text(re.sub(
+    r"https://github\.com/[^/\s)]+/devops-capstone-project/actions/workflows/ci-build\.yaml",
+    f"https://github.com/{repo}/actions/workflows/ci-build.yaml",
+    readme.read_text(),
+))
 branch = "development/capstone-implementation"
 with tempfile.TemporaryDirectory(prefix="capstone-publish-") as folder:
     destination = Path(folder) / "repo"

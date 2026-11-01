@@ -186,8 +186,24 @@ class TestAccountService(TestCase):
         """It should return a Location that resolves to the new resource"""
         response = self.client.post(BASE_URL, json=AccountFactory().serialize())
         location = response.headers["Location"]
-        self.assertTrue(location.endswith(f'/accounts/{response.get_json()["id"]}'))
+        self.assertEqual(location, f'/accounts/{response.get_json()["id"]}')
         self.assertEqual(self.client.get(location).status_code, 200)
+        self.assertEqual(self.client.get("/", base_url="https://example.test").get_json()["paths"], BASE_URL)
+
+    def test_nul_text_rejected_without_mutating(self):
+        """It should reject PostgreSQL-invalid NULs for POST and preserve valid data on PUT."""
+        response = self.client.post(BASE_URL, json=AccountFactory().serialize())
+        self.assertEqual(response.status_code, 201)
+        original = response.get_json()
+        resource = f'{BASE_URL}/{original["id"]}'
+        for field in ["name", "email", "address", "phone_number"]:
+            data = dict(original)
+            data[field] = "bad\x00value"
+            with self.subTest(field=field):
+                self.assertEqual(self.client.post(BASE_URL, json=data).status_code, 400)
+                self.assertEqual(self.client.put(resource, json=data).status_code, 400)
+                self.assertEqual(self.client.get(resource).get_json(), original)
+                self.assertEqual(len(Account.all()), 1)
 
     def test_invalid_input(self):
         """It should reject malformed dates, empty/oversized fields and non-object JSON"""

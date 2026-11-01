@@ -164,7 +164,7 @@ def initialize(start):
     if state and state.get("repo") != repo:
         raise RuntimeError("Saved repository does not belong to the active GitHub account")
     # Verify Projects access before creating any resources.
-    gql("query { viewer { projectsV2(first:1) { totalCount } } }")
+    gql("query { viewer { projectsV2(first:1) { nodes { id } } } }")
     # Refuse to silently overwrite or adopt an existing repository.
     check = subprocess.run(["gh", "repo", "view", repo], capture_output=True)
     if check.returncode == 0 and not state:
@@ -192,7 +192,7 @@ def initialize(start):
     mutation(
         "linkProjectV2ToRepository",
         "LinkProjectV2ToRepositoryInput",
-        {"projectId": project["id"], "repositoryId": repository["node_id"]},
+        {"projectId": state["project"], "repositoryId": repository["node_id"]},
         "repository { id }",
     )
     fields = gql(
@@ -200,7 +200,7 @@ def initialize(start):
         "... on ProjectV2Field{id name} ... on ProjectV2SingleSelectField{id name options{id name}}"
         "... on ProjectV2IterationField{id name configuration{iterations{id title} completedIterations{id title}}}"
         "}}}}}",
-        {"id": project["id"]},
+        {"id": state["project"]},
     )["node"]["fields"]["nodes"]
     status = next(f for f in fields if f.get("name") == "Status")
     state["status_field"] = status["id"]
@@ -210,7 +210,7 @@ def initialize(start):
             COLUMNS, ["GRAY", "GRAY", "BLUE", "PURPLE", "YELLOW", "ORANGE", "GREEN", "GREEN"]
         )
     ]
-    updated = mutation(
+    updated = {"projectV2Field": status} if all(n in state.get("statuses", {}) for n in COLUMNS) else mutation(
         "updateProjectV2Field",
         "UpdateProjectV2FieldInput",
         {"fieldId": status["id"], "singleSelectOptions": options},

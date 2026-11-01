@@ -15,16 +15,21 @@ spec:
       params:
         - {name: repo-url, value: $(params.repo-url)}
         - {name: branch, value: $(params.branch)}
+        - {name: run-id, value: $(context.pipelineRun.uid)}
       workspaces:
         - {name: source, workspace: pipeline-workspace}
     - name: lint
       runAfter: [clone]
       taskRef: {name: accounts-lint}
+      params:
+        - {name: run-id, value: $(context.pipelineRun.uid)}
       workspaces:
         - {name: source, workspace: pipeline-workspace}
     - name: test
       runAfter: [lint]
       taskRef: {name: accounts-test}
+      params:
+        - {name: run-id, value: $(context.pipelineRun.uid)}
       workspaces:
         - {name: source, workspace: pipeline-workspace}
     - name: build
@@ -32,6 +37,7 @@ spec:
       taskRef: {name: accounts-build}
       params:
         - {name: image, value: $(params.image)}
+        - {name: run-id, value: $(context.pipelineRun.uid)}
       workspaces:
         - {name: source, workspace: pipeline-workspace}
     - name: deploy
@@ -39,5 +45,6 @@ spec:
       taskRef: {name: accounts-deploy}
       params:
         - {name: image, value: $(params.image)}
+        - {name: run-id, value: $(context.pipelineRun.uid)}
       workspaces:
         - {name: source, workspace: pipeline-workspace}

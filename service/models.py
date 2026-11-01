@@ -121,10 +121,10 @@ class Account(db.Model, PersistentBase):
             if field not in data:
                 raise DataValidationError("Invalid Account: missing " + field)
             value = data[field]
-            if not isinstance(value, str) or not value.strip() or len(value) > maximum:
+            if not isinstance(value, str) or not value.strip() or len(value) > maximum or "\x00" in value:
                 raise DataValidationError(f"Invalid Account: invalid {field}")
         phone = data.get("phone_number")
-        if phone is not None and (not isinstance(phone, str) or len(phone) > 32):
+        if phone is not None and (not isinstance(phone, str) or len(phone) > 32 or "\x00" in phone):
             raise DataValidationError("Invalid Account: invalid phone_number")
         try:
             joined = data.get("date_joined")

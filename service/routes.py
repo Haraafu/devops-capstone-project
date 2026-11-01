@@ -29,7 +29,7 @@ def index():
         jsonify(
             name="Account REST API Service",
             version="1.0",
-            paths=url_for("list_accounts", _external=True),
+            paths=url_for("list_accounts"),
         ),
         status.HTTP_200_OK,
     )
@@ -50,7 +50,7 @@ def create_accounts():
     account.deserialize(request.get_json())
     account.create()
     message = account.serialize()
-    location_url = url_for("get_accounts", account_id=account.id, _external=True)
+    location_url = url_for("get_accounts", account_id=account.id)
     return make_response(jsonify(message), status.HTTP_201_CREATED, {"Location": location_url})
 
 

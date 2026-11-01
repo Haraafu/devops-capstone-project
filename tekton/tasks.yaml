@@ -6,6 +6,7 @@ spec:
   params:
     - {name: repo-url, type: string}
     - {name: branch, type: string, default: main}
+    - {name: run-id, type: string}
   workspaces:
     - name: source
   steps:
@@ -15,24 +16,29 @@ spec:
         - {name: REPO_URL, value: $(params.repo-url)}
         - {name: BRANCH, value: $(params.branch)}
         - {name: SOURCE, value: $(workspaces.source.path)}
+        - {name: RUN_ID, value: $(params.run-id)}
       script: |
         #!/bin/sh
         set -eu
-        # Only clear the dedicated repository subdirectory in this workspace.
-        rm -rf "${SOURCE:?}/repo"
-        git clone --depth 1 --branch "$BRANCH" -- "$REPO_URL" "$SOURCE/repo"
+        # Isolate source across overlapping PipelineRuns sharing the PVC.
+        case "$RUN_ID" in ''|*[!a-zA-Z0-9-]*) exit 1 ;; esac
+        mkdir -p "$SOURCE/$RUN_ID"
+        rm -rf "${SOURCE:?}/$RUN_ID/repo"
+        git clone --depth 1 --branch "$BRANCH" -- "$REPO_URL" "$SOURCE/$RUN_ID/repo"
 ---
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: accounts-lint
 spec:
+  params:
+    - {name: run-id, type: string}
   workspaces:
     - name: source
   steps:
     - name: lint
       image: python:3.9-slim
-      workingDir: $(workspaces.source.path)/repo
+      workingDir: $(workspaces.source.path)/$(params.run-id)/repo
       env:
         - {name: HOME, value: /tmp}
       script: |
@@ -48,6 +54,8 @@ kind: Task
 metadata:
   name: accounts-test
 spec:
+  params:
+    - {name: run-id, type: string}
   workspaces:
     - name: source
   sidecars:
@@ -65,7 +73,7 @@ spec:
   steps:
     - name: tests
       image: python:3.9-slim
-      workingDir: $(workspaces.source.path)/repo
+      workingDir: $(workspaces.source.path)/$(params.run-id)/repo
       env:
         - {name: HOME, value: /tmp}
         - name: DATABASE_URI
@@ -96,21 +104,24 @@ metadata:
 spec:
   params:
     - {name: image, type: string}
+    - {name: run-id, type: string}
   workspaces:
     - name: source
   steps:
     - name: build-and-push
       image: quay.io/openshift/origin-cli:4.18
-      workingDir: $(workspaces.source.path)/repo
+      workingDir: $(workspaces.source.path)/$(params.run-id)/repo
       env:
         - {name: IMAGE, value: $(params.image)}
+        - {name: BUILD_CONFIG, value: 'accounts-$(context.taskRun.uid)'}
       script: |
         #!/bin/bash
         set -euo pipefail
         [[ "$IMAGE" =~ ^[a-zA-Z0-9._:/@-]+$ ]] || exit 1
-        sed "s|IMAGE_PLACEHOLDER|$IMAGE|g" deploy/buildconfig.yaml | oc apply -f -
+        sed -e "s|IMAGE_PLACEHOLDER|$IMAGE|g" \
+          -e "s|name: accounts$|name: $BUILD_CONFIG|" deploy/buildconfig.yaml | oc apply -f -
         # OpenShift's build service builds the Dockerfile and pushes to IBM ICR.
-        oc start-build accounts --from-dir=. --follow --wait
+        oc start-build "$BUILD_CONFIG" --from-dir=. --follow --wait
 ---
 apiVersion: tekton.dev/v1
 kind: Task
@@ -119,12 +130,13 @@ metadata:
 spec:
   params:
     - {name: image, type: string}
+    - {name: run-id, type: string}
   workspaces:
     - name: source
   steps:
     - name: deploy
       image: quay.io/openshift/origin-cli:4.18
-      workingDir: $(workspaces.source.path)/repo
+      workingDir: $(workspaces.source.path)/$(params.run-id)/repo
       env:
         - {name: IMAGE, value: $(params.image)}
       script: |
